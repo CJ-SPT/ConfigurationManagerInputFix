@@ -1,11 +1,11 @@
 using System.Reflection;
 using BepInEx;
-using SPT.Reflection.Patching;
+using HarmonyLib;
 using UnityEngine;
 
 namespace ConfigurationManagerInputFix;
 
-internal sealed class KeyCapturePatch : ModulePatch
+internal static class KeyCapturePatch
 {
     private const string ConfigurationManagerAssemblyName = "ConfigurationManager";
     private const string SettingFieldDrawerTypeName = "ConfigurationManager.SettingFieldDrawer";
@@ -18,7 +18,18 @@ internal sealed class KeyCapturePatch : ModulePatch
     private static bool _ownsCaptureList;
     private static bool _accessFailureLogged;
 
-    protected override MethodBase GetTargetMethod()
+    internal static void Enable(Harmony harmony)
+    {
+        var targetMethod = GetTargetMethod();
+        var prefixMethod = typeof(KeyCapturePatch).GetMethod(
+            nameof(PatchPrefix),
+            BindingFlags.Static | BindingFlags.NonPublic)
+            ?? throw new MissingMethodException(typeof(KeyCapturePatch).FullName, nameof(PatchPrefix));
+
+        harmony.Patch(targetMethod, prefix: new HarmonyMethod(prefixMethod));
+    }
+
+    private static MethodBase GetTargetMethod()
     {
         var drawerType = ResolveDrawerType();
         _keysToCheckField = ResolveField(drawerType, KeysToCheckFieldName);
@@ -35,7 +46,6 @@ internal sealed class KeyCapturePatch : ModulePatch
                ?? throw new MissingMethodException(SettingFieldDrawerTypeName, DrawSettingValueMethodName);
     }
 
-    [PatchPrefix]
     private static void PatchPrefix()
     {
         if (!Plugin.FilterEnabled || _ownsCaptureList || _currentShortcutField?.GetValue(null) is null)

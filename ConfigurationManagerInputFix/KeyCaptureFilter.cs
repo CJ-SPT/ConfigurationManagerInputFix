@@ -12,11 +12,9 @@ internal static class KeyCaptureFilter
         return supportedKeyCodes.Where(IsCapturable).ToArray();
     }
 
-    internal static bool IsCapturable(KeyCode keyCode) =>
+    private static bool IsCapturable(KeyCode keyCode) =>
         !IsBlocked(keyCode);
 
     internal static bool IsBlocked(KeyCode keyCode) =>
-        keyCode == KeyCode.None ||
-        keyCode == KeyCode.Mouse0 ||
-        keyCode == KeyCode.F13;
+        keyCode is KeyCode.None or KeyCode.Mouse0 or KeyCode.F13;
 }

@@ -15,7 +15,6 @@
 
   <PropertyGroup>
     <TarkovDir Condition=" '$(TarkovDir)' == '' ">$(SolutionDir)..\..\</TarkovDir>
-    <TarkovPluginsSPTDir>$(TarkovDir)BepInEx\plugins\spt\</TarkovPluginsSPTDir>
     <TarkovManagedDir>$(TarkovDir)EscapeFromTarkov_Data\Managed\</TarkovManagedDir>
     <TarkovBepInExCoreDir>$(TarkovDir)BepInEx\core\</TarkovBepInExCoreDir>
   </PropertyGroup>
@@ -35,10 +34,6 @@
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>$(TarkovManagedDir)UnityEngine.CoreModule.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="spt-reflection">
-      <HintPath>$(TarkovPluginsSPTDir)spt-reflection.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>

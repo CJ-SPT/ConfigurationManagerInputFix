@@ -1,6 +1,7 @@
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
+using HarmonyLib;
 
 namespace ConfigurationManagerInputFix;
 
@@ -9,7 +10,7 @@ namespace ConfigurationManagerInputFix;
 public sealed class Plugin : BaseUnityPlugin
 {
     private ConfigEntry<bool>? _enabled;
-    private KeyCapturePatch? _keyCapturePatch;
+    private Harmony? _harmony;
 
     internal static ManualLogSource Log { get; private set; } = null!;
     internal static bool FilterEnabled => Instance?._enabled?.Value == true;
@@ -29,8 +30,8 @@ public sealed class Plugin : BaseUnityPlugin
 
         try
         {
-            _keyCapturePatch = new KeyCapturePatch();
-            _keyCapturePatch.Enable();
+            _harmony = new Harmony("com.cj.configurationmanagerinputfix");
+            KeyCapturePatch.Enable(_harmony);
         }
         catch (Exception exception)
         {
@@ -51,10 +52,7 @@ public sealed class Plugin : BaseUnityPlugin
 
         try
         {
-            if (_keyCapturePatch?.IsActive == true)
-            {
-                _keyCapturePatch.Disable();
-            }
+            _harmony?.UnpatchSelf();
         }
         catch (Exception exception)
         {
